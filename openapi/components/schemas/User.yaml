@@ -17,3 +17,6 @@ properties:
     example: Smith
   email:
     $ref: ./Email.yaml
+  gender:
+    type: string
+    example: male
