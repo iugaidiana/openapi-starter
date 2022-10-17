@@ -14,7 +14,7 @@ servers:
         default: 'server:port'
 tags:
   - name: Address Management API
-    description: all APIs
+  description: all APIs
 paths:
   /api/v1/addressManagement/address:
     get:
