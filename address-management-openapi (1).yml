@@ -17,8 +17,6 @@ tags:
 paths:
   /api/v1/addressManagement/address:
     get:
-      tags:
-        - Address Management API
       operationId: getAddressUnitsByName
       summary: Get Address Unit By Name
       description: This operation is used to retrieve all Address Units by Name
@@ -88,6 +86,7 @@ paths:
     post:
       tags:
         - Address Management API
+          description: all Address Manageement APIs
       operationId: createAddressUnit
       summary: Create Address Unit
       description: This method creates an Address Unit
