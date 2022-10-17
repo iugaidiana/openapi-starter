@@ -1,0 +1,1079 @@
+openapi: 3.0.1
+x-stoplight:
+  id: zzbw0n8uxyyi3
+info:
+  title: TBAPI Open API Documentation. Address Management API
+  version: '1.2'
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0'
+servers:
+  - url: 'http://{server}'
+    variables:
+      server:
+        default: 'server:port'
+tags:
+  - name: Address Management API
+paths:
+  /api/v1/addressManagement/address:
+    get:
+      tags:
+        - Address Management API
+      operationId: getAddressUnitsByName
+      summary: Get Address Unit By Name
+      description: This operation is used to retrieve all Address Units by Name
+      x-nc-zdt-ready: true
+      parameters:
+        - $ref: '#/components/parameters/x-request-id'
+        - $ref: '#/components/parameters/jsessionid'
+        - $ref: '#/components/parameters/-fields'
+        - $ref: '#/components/parameters/fields'
+        - $ref: '#/components/parameters/accept-language'
+        - name: name
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter by address unit name. AddressUnit name can be specified on any supported language
+          example: Guayaquil
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Limit the address unit list size. Applicable values between 1 and 30.
+          example: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AddressUnit'
+              examples:
+                getAddressUnitsByName:
+                  summary: Get Address Unit By Name
+                  value:
+                    - name: Guayaquil
+                      id: '9155156744113095847'
+                      href: /api/v1/addressManagement/address/9155156744113095847
+                    - name: CBD
+                      id: '9155156821013095953'
+                      href: /api/v1/addressManagement/address/9155156821013095953
+                    - name: Av de Las Américas
+                      id: '9155156825013095953'
+                      href: /api/v1/addressManagement/address/9155156825013095953
+                    - name: '090513'
+                      id: '9155156823113095953'
+                      href: /api/v1/addressManagement/address/9155156823113095953
+                    - name: Bus Terminal
+                      id: '9155156828113095953'
+                      href: /api/v1/addressManagement/address/9155156828113095953
+        '400':
+          $ref: '#/components/responses/error_400'
+        '401':
+          $ref: '#/components/responses/error_401'
+        '403':
+          $ref: '#/components/responses/error_403'
+        '404':
+          $ref: '#/components/responses/error_404'
+        '429':
+          $ref: '#/components/responses/error_429'
+        '500':
+          $ref: '#/components/responses/error_500'
+      x-nc-security-policy:
+        name: get.address.unit.by.name
+    post:
+      tags:
+        - Address Management API
+      operationId: createAddressUnit
+      summary: Create Address Unit
+      description: This method creates an Address Unit
+      x-nc-zdt-ready: false
+      parameters:
+        - $ref: '#/components/parameters/x-request-id'
+        - $ref: '#/components/parameters/jsessionid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAddressUnitRequest'
+            example:
+              name: Massachusetts
+              parentId: '9131976078213001844'
+              subtype: '9131576234213127352'
+              abbreviation: USA
+              formattedAddress: 'University Office Park, 95 Sawyer Road Waltham, MA 02453, United States of America'
+        required: true
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAddressUnitResponse'
+              example:
+                addressUnit:
+                  id: '9144829697213799999'
+        '400':
+          $ref: '#/components/responses/error_400'
+        '401':
+          $ref: '#/components/responses/error_401'
+        '403':
+          $ref: '#/components/responses/error_403'
+        '429':
+          $ref: '#/components/responses/error_429'
+        '500':
+          $ref: '#/components/responses/error_500'
+        '502':
+          $ref: '#/components/responses/error_502'
+      x-nc-security-policy:
+        name: create.address.unit
+  '/api/v1/addressManagement/address/{id}':
+    get:
+      tags:
+        - Address Management API
+      operationId: getAddressUnitById
+      summary: Get Address Unit By ID
+      description: This method gets an Address Unit with the given ID
+      x-nc-zdt-ready: true
+      parameters:
+        - $ref: '#/components/parameters/x-request-id'
+        - $ref: '#/components/parameters/jsessionid'
+        - $ref: '#/components/parameters/-fields'
+        - $ref: '#/components/parameters/fields'
+        - $ref: '#/components/parameters/accept-language'
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: NCID
+          description: Id of AddressUnit
+          example: '9155156821013095953'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressUnit'
+              examples:
+                getAddressUnitById:
+                  summary: Get Address Unit By ID
+                  value:
+                    formattedAddress: 'CBD, Guayaquil, Ecuador'
+                    addressUnitTypeId: '9131976078213000750'
+                    name: CBD
+                    addressUnitSubtypeId: '9131576234213127355'
+                    id: '9155156821013095953'
+                    addressUnitChain:
+                      - formattedAddress: 'Guayaquil, Ecuador'
+                        addressUnitTypeId: '9131976078213000748'
+                        name: Guayaquil
+                        addressUnitSubtypeId: '9131576234213127352'
+                        id: '9155156744113095847'
+                        href: /api/v1/addressManagement/address/9155156744113095847
+                      - formattedAddress: Ecuador
+                        name: Ecuador
+                        id: '9155156740113095847'
+                        href: /api/v1/addressManagement/address/9155156740113095847
+                    href: /api/v1/addressManagement/address/9155156821013095953
+        '400':
+          $ref: '#/components/responses/error_400'
+        '401':
+          $ref: '#/components/responses/error_401'
+        '403':
+          $ref: '#/components/responses/error_403'
+        '404':
+          $ref: '#/components/responses/error_404'
+        '429':
+          $ref: '#/components/responses/error_429'
+        '500':
+          $ref: '#/components/responses/error_500'
+      x-nc-security-policy:
+        name: get.address.unit
+  /api/v1/addressManagement/fullAddresses:
+    get:
+      tags:
+        - Address Management API
+      operationId: getFullAddresses
+      summary: Get Full Addresses
+      description: This method gets full-string search including fuzzy search for the nearest locations from partial or misspelled addresses
+      x-nc-zdt-ready: true
+      parameters:
+        - $ref: '#/components/parameters/range'
+        - $ref: '#/components/parameters/x-request-id'
+        - $ref: '#/components/parameters/jsessionid'
+        - $ref: '#/components/parameters/-fields'
+        - $ref: '#/components/parameters/fields'
+        - $ref: '#/components/parameters/accept-language'
+        - name: addressSearchText
+          in: query
+          required: true
+          description: 'Specifies the partial address to execute full-string search. Can be applied not only in original language, search is available in other supported by configuration language.'
+          schema:
+            type: string
+            example: USA
+        - name: fussiness
+          in: query
+          required: false
+          description: 'Levenshtein Distance for fuzzy search. By default equal to 0, full match.'
+          schema:
+            type: integer
+            format: int32
+            default: 0
+          example: 2
+        - name: offset
+          in: query
+          required: false
+          description: Response pagination. Page start index.
+          schema:
+            type: integer
+            format: int32
+            default: 1
+          example: 1
+        - name: limit
+          in: query
+          required: false
+          description: Response pagination. Number of rows in the page.
+          schema:
+            type: integer
+            format: int32
+            default: 100
+          example: 50
+      responses:
+        '200':
+          description: OK
+          headers:
+            content-range:
+              $ref: '#/components/headers/content-range'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SuggestionAddressUnit'
+              examples:
+                getFullAddresses:
+                  summary: Get Full Addresses
+                  value:
+                    - Address: Region SBX
+                      Type ID: '9156865600013836240'
+                      Addr_Depth: '2'
+                      ID: '9157016072413873927'
+                    - Address: 1001 Region SBX City SBX
+                      Type ID: '9156865603913836140'
+                      Addr_Depth: '4'
+                      ID: '9157016072513873927'
+                    - Address: 1001 Region SBX City SBX
+                      Type ID: '9156865604213836240'
+                      Addr_Depth: '3'
+                      ID: '9157016073413873927'
+                    - Address: 1001 Region SBX City SBX Street SBX ST
+                      Type ID: '9156865608213836240'
+                      Addr_Depth: '4'
+                      ID: '9157016076413873927'
+        '400':
+          $ref: '#/components/responses/error_400'
+        '401':
+          $ref: '#/components/responses/error_401'
+        '403':
+          $ref: '#/components/responses/error_403'
+        '404':
+          $ref: '#/components/responses/error_404'
+        '405':
+          $ref: '#/components/responses/error_405'
+        '406':
+          $ref: '#/components/responses/error_406'
+        '429':
+          $ref: '#/components/responses/error_429'
+        '500':
+          $ref: '#/components/responses/error_500'
+      x-nc-security-policy:
+        name: get.full.addresses
+  '/api/v1/addressManagement/fullAddresses/{id}':
+    get:
+      tags:
+        - Address Management API
+      operationId: getFullAddressById
+      description: This method gets full address as formatted string by address unit ID.
+      summary: Get Full Address By ID
+      x-nc-zdt-ready: true
+      parameters:
+        - $ref: '#/components/parameters/x-request-id'
+        - $ref: '#/components/parameters/jsessionid'
+        - $ref: '#/components/parameters/-fields'
+        - $ref: '#/components/parameters/fields'
+        - $ref: '#/components/parameters/accept-language'
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: NCID
+          description: Id of SuggestionAddressUnit
+          example: '9157016072413873927'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuggestionAddressUnit'
+              example:
+                Address: Region SBX
+                Type ID: '9156865600013836240'
+                Addr_Depth: '2'
+                ID: '9157016072413873927'
+        '400':
+          $ref: '#/components/responses/error_400'
+        '401':
+          $ref: '#/components/responses/error_401'
+        '403':
+          $ref: '#/components/responses/error_403'
+        '404':
+          $ref: '#/components/responses/error_404'
+        '405':
+          $ref: '#/components/responses/error_405'
+        '406':
+          $ref: '#/components/responses/error_406'
+        '429':
+          $ref: '#/components/responses/error_429'
+        '500':
+          $ref: '#/components/responses/error_500'
+      x-nc-security-policy:
+        name: get.full.address.by.id
+  /api/v1/addressManagement/market:
+    get:
+      tags:
+        - Address Management API
+      operationId: resolveMarketByAddress
+      description: This method allows to resolve market value based on customer address.
+      summary: Resolve Market By Address
+      x-nc-zdt-ready: true
+      parameters:
+        - $ref: '#/components/parameters/x-request-id'
+        - $ref: '#/components/parameters/jsessionid'
+        - $ref: '#/components/parameters/accept-language'
+        - name: addressSearchText
+          in: query
+          required: false
+          schema:
+            type: string
+          description: 'Specifies the partial address to execute full-string search. Can be applied not only in original language, search is available in other supported by configuration language. In case addressSearchText is set within fullAddress then search will be performed by fullAddress.'
+          example: USA
+        - name: addressUnitID
+          in: query
+          required: false
+          schema:
+            type: string
+            format: NCID
+          description: Id of AddressUnit
+          example: '9144829697213799999'
+        - name: fullAddress
+          in: query
+          required: false
+          schema:
+            type: string
+          description: 'Specifies the full address string (full match). Can be applied not only in original language, search is available in other supported by configuration language. In case fullAddress is set within addressSearchText then search will be performed by fullAddress.'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Market'
+              example:
+                originalName: MARKET L
+                code: MARKET L
+                name: MARKET L
+                id: '9153277638513227407'
+                href: /api/v1/catalogManagement/market/9153277638513227407
+        '400':
+          $ref: '#/components/responses/error_400'
+        '401':
+          $ref: '#/components/responses/error_401'
+        '403':
+          $ref: '#/components/responses/error_403'
+        '404':
+          $ref: '#/components/responses/error_404'
+        '422':
+          $ref: '#/components/responses/error_422'
+        '429':
+          $ref: '#/components/responses/error_429'
+        '500':
+          $ref: '#/components/responses/error_500'
+      x-nc-security-policy:
+        name: resolve.market.by.address
+components:
+  schemas:
+    AddressUnit:
+      title: AddressUnit
+      required:
+        - id
+        - name
+        - href
+        - formattedAddress
+      type: object
+      properties:
+        addressUnitChain:
+          type: array
+          description: Full chain of Address Units till the current one
+          items:
+            $ref: '#/components/schemas/AddressUnitChainLink'
+        addressUnitTypeId:
+          type: string
+          format: NCID
+          description: 'The type of the address unit (e.g. "Country", "State", "Region", "County", "City", "District", "Street", "Building", "Office", "Apartment" etc.) - only the NC object ID is represented. Should be populated for all address units except Countries.'
+          example: '9147057697613822000'
+        addressUnitSubtypeId:
+          type: string
+          format: NCID
+          description: 'The subtype of the address unit (e.g. "Residential Building", "Trade Center", "Headquarters" etc.) - only the NC object ID is represented. Should be populated for all address units except Countries.'
+          example: '9147057697613822000'
+        postalCode:
+          items:
+            $ref: '#/components/schemas/AddressUnitChainLink'
+          description: The postal code of the address unit (specified e.g. for the building level).
+        name:
+          type: string
+          description: The NC object localized name of the address unit.
+          example: Бостон
+        originalName:
+          type: string
+          description: The NC object original name of the address unit.
+          example: Boston
+        abbreviation:
+          type: string
+          description: Abbreviation of the Address Unit Chain Link
+          example: ARCTIC
+        formattedAddress:
+          type: string
+          description: 'The localized formatted address string, which includes the address in customized view. For example, Super street FWY My province, New State#1, USA.'
+          example: 160 Уборевича Заводской район Минск Минская Область Беларусь
+        originalFormattedAddress:
+          type: string
+          description: 'The original formatted address string, which includes the address in customized view. For example, Super street FWY My province, New State#1, USA.'
+          example: 160 Uborevicha Zavodskoy district Minsk Minsk area Belarus
+        description:
+          type: string
+          description: Description of address unit
+          example: 'The weather is quite cold there, so take the warm clothers'
+        id:
+          type: string
+          format: NCID
+          description: The ID of the address unit.
+          example: '9144829697213799999'
+        href:
+          type: string
+          format: uri-reference
+          description: URI of Address Unit.
+          example: /api/v1/tbapi/addressManagement/address/9147057697613821533
+    AddressUnitChainLink:
+      title: AddressUnitChainLink
+      required:
+        - id
+        - name
+        - href
+        - formattedAddress
+      type: object
+      properties:
+        addressUnitSubtypeId:
+          type: string
+          format: NCID
+          description: 'Unique identifier of the Address Unit type. It is project-specific dictionary, particular values should be configured in Address Descriptors in TOMS. Should be populated for all address units except Countries.'
+          example: '9147057697613822000'
+        addressUnitTypeId:
+          type: string
+          format: NCID
+          description: 'Unique identifier of the Address Unit type. It is project-specific dictionary, particular values should be configured in Address Descriptors in TOMS. Should be populated for all address units except Countries.'
+          example: '9147057697613822000'
+        name:
+          type: string
+          description: The NC object localized name of the address unit.
+          example: Уборевича
+        originalName:
+          type: string
+          description: The NC object original name of the address unit.
+          example: Uborevicha
+        abbreviation:
+          type: string
+          description: Abbreviation of the Address Unit Chain Link
+          example: ARCTIC
+        formattedAddress:
+          type: string
+          description: 'The localized formatted address string, which includes the address in customized view. For example, Super street FWY My province, New State#1, USA.'
+          example: 160 Уборевича Заводской район
+        originalFormattedAddress:
+          type: string
+          description: 'The original formatted address string, which includes the address in customized view. For example, Super street FWY My province, New State#1, USA.'
+          example: 160 Uborevicha Zavodskoy district
+        description:
+          type: string
+          description: Description of Address Unit Chain Link.
+          example: It is 6 miles away from the airport
+        id:
+          type: string
+          format: NCID
+          description: Identifier of the Address Unit Chain Link
+          example: '9153304665613201065'
+        href:
+          type: string
+          format: uri-reference
+          description: URI of Address Unit Chain Link.
+          example: /api/v1/tbapi/addressManagement/address/9147057697613821533
+    BaseId:
+      title: BaseId
+      type: object
+      properties:
+        id:
+          type: string
+          format: NCID
+          description: Unique ID of AddressUnit
+          example: '9144829697213799999'
+    CreateAddressUnitRequest:
+      title: CreateAddressUnitRequest
+      required:
+        - parentId
+        - name
+        - subtype
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of Address Unit.
+          example: Massachusetts
+        localizedNames:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: string
+            example:
+              en: Boston
+              ru: Бостон
+          description: |
+            The localized name of AddressUnit. 
+            The localized names should be added for all supported language.
+            The key:value pair should consist information about the language code in ISO-2 letter language code(key) and translated value of AddressUnit name(value). 
+        parentId:
+          type: string
+          format: NCID
+          description: ID of parent address.
+          example: '9131976078213001844'
+        subtype:
+          type: string
+          description: Unique identifier of the Address Unit subtype.
+          example: '9131576234213127352'
+        abbreviation:
+          type: string
+          description: Abbreviation of the Address Unit
+          example: USA
+        formattedAddress:
+          type: string
+          description: Formatted address string in custom view
+          example: 'University Office Park, 95 Sawyer Road Waltham, MA 02453, United States of America'
+          x-nc-deprecation-policy:
+            deprecated-from: 2022.4
+            stop-support: 2023.1
+            remove-from: 2023.2
+            deprecation-reason: |
+              Parameter isn't used in AddressUnit creation   
+        description:
+          type: string
+          description: Description of address to be created
+          example: It is 6 miles away from the airport
+    CreateAddressUnitResponse:
+      title: CreateAddressUnitResponse
+      type: object
+      properties:
+        addressUnit:
+          description: Current field contains an ID of address Unit
+          $ref: '#/components/schemas/BaseId'
+    SuggestionAddressUnit:
+      title: SuggestionAddressUnit
+      required:
+        - Address
+        - ID
+        - Type ID
+        - Addr_Depth
+      type: object
+      properties:
+        Address:
+          type: string
+          description: Localized Full Address as formatted String
+          example: 160 Уборевича Заводской район Минск Минская Область Беларусь
+        OriginalAddress:
+          type: string
+          description: Original Full Address as formatted String
+          example: 160 Uborevicha Zavodskoy district Minsk Minsk area Belarus
+        ID:
+          type: string
+          format: NCID
+          description: Address Unit ID
+          example: '9156865604313836240'
+        Addr_Depth:
+          type: string
+          description: The depth of Address Unit in the hierarchy
+          example: '5'
+        Type ID:
+          type: string
+          format: NCID
+          description: Address Unit Type ID
+          example: '9156865604313836240'
+    Market:
+      title: Market
+      required:
+        - id
+        - name
+        - code
+      type: object
+      properties:
+        description:
+          type: string
+          description: Specifies the  market  description
+          example: UK Market
+        originalDescription:
+          type: string
+          description: Specifies the original  description
+          example: UK Market
+        name:
+          type: string
+          description: The name of the  market
+          example: UK
+        id:
+          type: string
+          format: NCID
+          description: Unique identifier of the  market
+          example: '9136000105613113827'
+        code:
+          type: string
+          description: Specifies the  market  code
+          example: UK Market
+        originalName:
+          type: string
+          description: Specifies the original name
+          example: UK Market
+        params:
+          type: array
+          items:
+            $ref: '#/components/schemas/MarketParam'
+          description: |
+            A list of extended market parameters.
+            Currently it is a placeholder for project implementations as no extended parameters are configured on Market level.
+        href:
+          type: string
+          description: URL of Market
+          example: /api/v1/catalogManagement/market/9153277638513227407
+        parentId:
+          type: string
+          description: Identifier of parent Market
+          example: '9132217821413111633'
+    ErrorResponse:
+      title: ErrorResponse
+      type: object
+      properties:
+        errors:
+          type: array
+          description: JSON array with TBAPI error details.
+          items:
+            type: object
+            required:
+              - status
+              - code
+              - reason
+            properties:
+              status:
+                type: string
+                description: HTML (System) error code. Codes described in the tables below. Mandatory field.
+              code:
+                type: string
+                description: TBAPI error code which is described in later table. Mandatory field.
+              sourceErrCode:
+                type: string
+                description: Source system Error Code. Optional field.
+              reason:
+                type: string
+                description: 'Human readable description of error, corresponds to code. Mandatory field.'
+              message:
+                type: string
+                description: Source System error message. Optional.
+              source:
+                type: object
+                required:
+                  - pointer
+                  - parameter
+                description: Details of error source.
+                properties:
+                  pointer:
+                    type: string
+                    description: An optional attribute that contains stacktrace or similar technical information.Is used mostly for testing and troubleshooting purposes. 'debugDetail' is presented in the error response only when logging.dev.mode=true.
+                  parameter:
+                    type: string
+                    description: Error parameter in the request.
+              debugDetail:
+                type: string
+                description: |-
+                  An optional attribute that contains stack trace or similar technical information. 
+                  Is used mostly for testing and troubleshooting purposes. 'debugDetail' is presented in the error response only when logging.dev.mode=true.
+              extra:
+                type: object
+                required:
+                  - referenceError
+                description: |-
+                  Object containing reference to error description. The extra field should be configured by project customization.
+                  Only referenceError field is included by default, all other should be customized separately.
+                properties:
+                  referenceError:
+                    type: string
+                    description: 'Reference to error description. For example, link to the BASS.'
+    ParamType:
+      title: ParamType
+      type: string
+      enum:
+        - String
+        - Decimal
+        - Boolean
+        - List
+    ParamGroup:
+      title: ParamGroup
+      type: object
+      properties:
+        name:
+          type: string
+    BusinessType:
+      title: BusinessType
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of Business Type.
+          example: Critical Stock
+    Param:
+      title: Param
+      required:
+        - name
+      type: object
+      description: This is an abstract type which contains information about extended parameters
+      properties:
+        type:
+          $ref: '#/components/schemas/ParamType'
+          description: 'Type of the parameter. Valid values are String, Decimal, Boolean, and List'
+          example: String
+        availableFrom:
+          type: string
+          format: date-time
+          description: Specifies the date from which parameter is available
+          example: '2022-01-01T09:01:00Z'
+        availableTo:
+          type: string
+          format: date-time
+          description: Specifies  the date to which  parameter  is available
+          example: '2022-01-01T09:01:00Z'
+        group:
+          $ref: '#/components/schemas/ParamGroup'
+          description: Group of the parameter. ParamGroup entity. Contains only the field name
+        businessType:
+          $ref: '#/components/schemas/BusinessType'
+          description: Business type of the parameter. BusinessType entity. Contains only the field name
+        name:
+          type: string
+          description: Name of the parameter
+          example: Product Image
+        description:
+          type: string
+          description: Description of the parameter
+          example: Product Image JPG
+    MarketParam:
+      title: MarketParam
+      type: object
+      description: MarketParam is a placeholder for project implementations.
+      allOf:
+        - $ref: '#/components/schemas/Param'
+        - properties:
+            value:
+              description: Value of the parameter
+  securitySchemes:
+    openId:
+      type: openIdConnect
+      description: Use OpenId to authorize requests.
+      openIdConnectUrl: 'https://example.com/.well-known/openid-configuration'
+  parameters:
+    x-request-id:
+      in: header
+      name: X-Request-ID
+      description: Request identifier to be transferred in HTTP header for any TBAPI operations
+      schema:
+        type: string
+        format: uuid
+      required: false
+    jsessionid:
+      in: cookie
+      name: JSESSIONID
+      description: TBAPI Session identifier
+      schema:
+        type: string
+    '-fields':
+      name: '-fields'
+      in: query
+      description: |
+        Comma separated list of attributes to be excluded from the response resource representation. 
+        Acceptable values are request specific and are determined by the response format. 
+        By default, full verbosity is assumed. Non-existent attributes are ignored.
+
+        It's mutually exclusive with 'fields' and using both in a request will result in a 400 response code.
+      schema:
+        type: string
+      example: 'markets, customerCategories, distributionChannels'
+    fields:
+      name: fields
+      in: query
+      description: |
+        Comma separated list of attributes to be included in the response resource representation. 
+        Acceptable values are request specific and are determined by the response format. 
+        By default, full verbosity is assumed. If this parameter is specified, only the requested attributes are included in the response along with the mandatory ID. Non-existent attributes are ignored. 
+
+        It's mutually exclusive with '-fields' and using both in a request will result in a 400 response code.
+      schema:
+        type: string
+      example: product.name
+    accept-language:
+      name: Accept-Language
+      in: header
+      description: 'Multilanguage Support. REST services determine the current user agent locale using the Accept-Language header according to RFC3282. For more information, refer to RFC3282.The localized properties of the resulting JSON resources are provided. JSON resources contain the original object names in a separate property for internal use. It is necessary as the object IDs are transient and can change during the product catalog re-mappings. The subset of fields is further referred as a localized preamble.'
+      schema:
+        type: string
+      example: en
+    range:
+      name: Range
+      in: header
+      description: Requested specific range of the elements for pagination
+      schema:
+        type: string
+      example: 1-10
+  examples:
+    error_400:
+      summary: Bad Request
+      value:
+        errors:
+          - status: '400'
+            code: TBAPI-3000
+            reason: 'Request data consistency error: 400 Bad Request'
+            debugDetail: "com.netcracker.tbapi.common.exceptions.api.impl.BadRequestException: 400 Bad Request...run(ThreadPoolExecutor.java:624)\n\tat java.lang.Thread.run(Thread.java:748)\n"
+            extra:
+              referenceError: 'https://bass.netcracker.com/display/GSS/TBAPI-3000'
+    error_401:
+      summary: Unauthorized
+      value:
+        errors:
+          - status: '401'
+            code: TBAPI-0001
+            reason: 'Unexpected business error: 401 : [HTTP Status 401 : Bad credentials] debugDetail: ''com.netcracker.tbapi.common.exceptions.api.impl.InternalServerErrorException:org.springframework.web.client.HttpClientErrorException$Unauthorized: 401 : [HTTP Status 401 : Bad credentials'''
+            extra:
+              referenceError: 'https://bass.netcracker.comTBAPI-0001'
+    error_403:
+      summary: Forbidden
+      value:
+        errors:
+          - status: '403'
+            code: TBAPI-0101
+            reason: 'Permission error: Forbidden. Access denied'
+            debugDetail: 'com.netcracker.tbapi.common.exceptions.api.impl.ForbiddenException: com.netcracker.tbapi.security.ForbiddenException: Permission error: Forbidden.Access denied'
+            extra:
+              referenceError: 'https://bass.netcracker.comTBAPI-0101'
+    error_404:
+      summary: Not Found
+      value:
+        errors:
+          - status: '404'
+            code: TBAPI-3000
+            reason: 'Request data consistency error: Object with id: 74 is not found.'
+            debugDetail: 'com.netcracker.tbapi.common.exceptions.api.impl.NotFoundException: Object with id: 74 is not found.'
+            extra:
+              referenceError: 'https://bass.netcracker.comTBAPI-3000'
+    error_429:
+      summary: Too Many Requests
+      value:
+        errors:
+          - status: '429'
+            code: TBAPI.GN-1643
+            reason: TBAPI is unable to process current amount of requests
+            message: Number of allowed requests has been exceeded for this API. Please try again soon
+            debugDetail: "com.netcracker.tbapi.common.exceptions.api.impl.UnprocessableEntityException: Number of allowed requests has been exceeded for this API. Please try again soon \n\tat ... Thread.run(Thread.java:748)\n"
+            extra:
+              referenceError: 'https://bass.netcracker.com'
+    error_500:
+      summary: Internal Server Error
+      value:
+        errors:
+          - status: '500'
+            code: TBAPI-0001
+            reason: 'Unexpected business error: Error invoking method ''owns'' in ''class com.sun.proxy.$Proxy382'''
+            debugDetail: 'com.netcracker.tbapi.common.exceptions.api.impl.InternalServerErrorException...javax.el.ELException: ... 110 more'
+            extra:
+              referenceError: 'https://bass.netcracker.comTBAPI-0001'
+    error_502:
+      summary: Bad Gateway
+      value:
+        errors:
+          - status: '502'
+            code: TBAPI-0001
+            reason: Unexpected business error
+            debugDetail: "com.netcracker.tbapi.common.exceptions.api.impl.BadGatewayException: Unexpected business error\tat...(Thread.java:748)"
+            extra:
+              referenceError: 'https://bass.netcracker.comTBAPI-0001'
+    error_405:
+      summary: Method Not Allowed
+      value:
+        errors:
+          - status: '405'
+            code: TBAPI.GN-2030
+            reason: 'The requested REST method is invalid for this scenario.: Request method ''DELETE'' not supported'
+            debugDetail: 'com.netcracker.tbapi.common.exceptions.api.impl.MethodNotAllowedException: org.springframework.web.HttpRequestMethodNotSupportedException: Request method ''DELETE'' not supported... 58 more'
+            extra:
+              referenceError: 'https://bass.netcracker.com'
+    error_406:
+      summary: Not Acceptable
+      value:
+        errors:
+          - status: '406'
+            code: TBAPI.AM-2004
+            reason: Cannot search for the Address as there are not enough symbols in the searching field.
+            debugDetail: 'com.netcracker.tbapi.common.exceptions.api.impl.NotAcceptableException: org.springframework.web.HttpRequestMethodNotSupportedException: Request at least first 5 symbols  of text should be populated to execute search... 58 more'
+            extra:
+              referenceError: 'https://bass.netcracker.com'
+    error_422:
+      summary: Unprocessable Entity
+      value:
+        errors:
+          - status: '422'
+            code: TBAPI.GN-1902
+            reason: Unable to execute the request as TBAS returned an unexpected response
+            message: |-
+              Validation errors during order submit
+              ValidationMessages: 
+              targetOrderItemId=9161826603113080680, typeOfProblem=BLOCK_ORDERING
+              message=Rule violation: National Data and Double National Data cannot be added at the same time
+              locationId=9161826605613080580
+            debugDetail: "com.netcracker.tbapi.common.exceptions.api.impl.UnprocessableEntityException: Unable to execute the request as TBAS returned an unexpected response\n\tat ... Thread.run(Thread.java:748)\n"
+            extra:
+              referenceError: 'https://bass.netcracker.com'
+  responses:
+    error_400:
+      description: |-
+        The server cannot or will not process the request due to an
+        apparent client error (e.g., malformed request syntax, size too large,
+        invalid request message framing, or deceptive request routing)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            error_400:
+              $ref: '#/components/examples/error_400'
+    error_401:
+      description: |-
+        Authentication is required and has failed or has not yet been
+        provided. The response must include a WWW-Authenticate header field containing
+        a challenge applicable to the requested resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            error_401:
+              $ref: '#/components/examples/error_401'
+    error_403:
+      description: 'The request contained valid data and was understood by the server, but the server is refusing action'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            error_401:
+              $ref: '#/components/examples/error_403'
+    error_404:
+      description: The requested resource could not be found but may be available in the future. Subsequent requests by the client are permissible
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            error_404:
+              $ref: '#/components/examples/error_404'
+    error_429:
+      description: Response status code indicates that indicates the client has sent too many requests in a given amount of time.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            error_429:
+              $ref: '#/components/examples/error_429'
+    error_500:
+      description: 'A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            error_500:
+              $ref: '#/components/examples/error_500'
+    error_502:
+      description: The server was acting as a gateway or proxy and received an invalid response from the upstream server.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            error_502:
+              $ref: '#/components/examples/error_502'
+    error_405:
+      description: |-
+        A request method is not supported for the requested resource;
+        for example, a GET request on a form that requires data to be presented
+        via POST, or a PUT request on a read-only resource.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            error_405:
+              $ref: '#/components/examples/error_405'
+    error_406:
+      description: |-
+        A request method is not supported for the requested resource;
+        for example, a GET request on a form that requires data to be presented
+        via POST, or a PUT request on a read-only resource.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            error_405:
+              $ref: '#/components/examples/error_406'
+    error_422:
+      description: |-
+        Response status code indicates that the server understands
+        the content type of the request entity, and the syntax of the request
+        entity is correct, but it was unable to process the contained instructions.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            error_422:
+              $ref: '#/components/examples/error_422'
+  headers:
+    content-range:
+      description: 'In case of paginated response from TBAPI, range of response content is populated with "Content-Range" HTTP header. The response header is used for collection requests. Is implemented for using range requests. The header describes what range of the selected representation is enclosed, and a payload consisting of the range. Worth noting is the difference between item indexing - RFC 7233 implies 0-based indexing for byte ranges, while the TMForum guidelines specify 1-based indexing for itemized collections. This specification uses 1-based indexes.'
+      schema:
+        type: string
+      example: 1-10/440
+security:
+  - openId: []
