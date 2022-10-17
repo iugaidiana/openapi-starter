@@ -85,9 +85,6 @@ paths:
       x-nc-security-policy:
         name: get.address.unit.by.name
     post:
-      tags:
-        - Address Management API
-          description: all Address Manageement APIs
       operationId: createAddressUnit
       summary: Create Address Unit
       description: This method creates an Address Unit
