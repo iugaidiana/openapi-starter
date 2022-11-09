@@ -1,0 +1,1001 @@
+openapi: 3.0.1
+info:
+  title: Resource Inventory Management API (TMF639)
+  version: '2.0'
+  contact: {}
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0'
+servers:
+  - url: 'http://{server}'
+    variables:
+      server:
+        default: 'server:port'
+externalDocs:
+  url: 'https://sps.netcracker.com/corporates/ProductDocumentation/IM/Resource%20Inventory%20REST%20API/Functional%20Design%20Specification/22.1.2/NC.FDS.RI.Resource_Inventory_REST_API_22.1.2.6.docx'
+tags:
+  - name: Resource Inventory Management API (TMF639)
+paths:
+  /api/v1/tmf/resourceInventoryManagement/resource:
+    get:
+      tags:
+        - Resource Inventory Management API (TMF639)
+      operationId: getListOfResources
+      summary: List Resources
+      description: This operation provides searching of object by its attributes. Not more than 100 objects can be returned in the result (there is no warning that not all objects are returned). The system returns only parameters that defined in attribute mappings of appropriate object type mapping. If some attribute is specified as search criteria in the GET request but it is not defined in attribute mapping then this attribute is ignored during search
+      parameters:
+        - $ref: '#/components/parameters/range'
+        - $ref: '#/components/parameters/x-request-id'
+        - $ref: '#/components/parameters/cookie'
+        - $ref: '#/components/parameters/-fields'
+        - $ref: '#/components/parameters/fields'
+        - $ref: '#/components/parameters/filtering_for_resource'
+      responses:
+        '200':
+          description: OK
+          headers:
+            content-range:
+              $ref: '#/components/headers/content-range'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Resource'
+              example:
+                - name: '42'
+                  id: '9157016077413873927'
+                  '@schemaLocation': /api/v1/tmf/resourceInventoryManagement/schema/9129538914513885630/type/9156849540313830044
+                  '@type': type$9156849540313830044$SA Address Unit
+                  '@baseType': type$9132362898913168884$Abstract Address Unit
+                  place:
+                    name: Street SBX
+                    id: '9157016076413873927'
+                    role: Parent
+                    href: /api/v1/tmf/resourceInventoryManagement/resource/9157016076413873927
+                  href: /api/v1/tmf/resourceInventoryManagement/resource/9157016077413873927
+        '400':
+          $ref: '#/components/responses/error_400'
+        '401':
+          $ref: '#/components/responses/error_401'
+        '403':
+          $ref: '#/components/responses/error_403'
+        '500':
+          $ref: '#/components/responses/error_500'
+        '502':
+          $ref: '#/components/responses/error_502'
+      x-nc-security-policy:
+        name: get.equipment.return.reasons
+    post:
+      tags:
+        - Resource Inventory Management API (TMF639)
+      operationId: createResource
+      summary: Create Resource
+      description: |
+        This operation allows creating Resource:
+          from scratch;
+          from template/device library. 
+        To create the Resource from scratch, all mandatory attributes must be specified:
+        | JSON Path | Description |
+        | ----------- | ----------- |
+        | $.@type | Indicates the type of the Resource. |
+        | $.place | Parent object of Resource. |
+        | $.place.Id | Unique identifier of parent object of Resource. |
+        | $.lifecycleState | State of Resource that can be mapped to any parameter of Resource object. |
+        To create the Resource from Template/Device Library, all mandatory attributes for Resource Specification must be specified too.
+        | JSON Path | Description |
+        | ----------- | ----------- |
+        | $.lifecycleState | State of Resource that can be mapped to any parameter of Resource object. |
+        | $.place | Parent object of Resource. |
+        | $.place.Id | Unique identifier of parent object of Resource. |
+        | $.resourceSpecification | Specification of resource into Device Library project or Templates project. |
+        | $.resourceSpecification.id | Unique identifier of specification of resource into Device Library project or Templates project. |
+      parameters:
+        - $ref: '#/components/parameters/x-request-id'
+        - $ref: '#/components/parameters/cookie'
+        - $ref: '#/components/parameters/-fields'
+        - $ref: '#/components/parameters/fields'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Resource_CreateRequest'
+            example:
+              name: Country created by TMF639 via TBAPI
+              '@type': type$9156849540313830044$SA Address Unit
+              lifecycleState: Planned
+              place:
+                id: '9157016076413873927'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+              example:
+                name: Country created by TMF639 via TBAPI
+                id: '9157016077413873928'
+                lifecycleState: Planned
+                '@schemaLocation': /api/v1/tmf/resourceInventoryManagement/schema/9129538914513885630/type/9156849540313830044
+                '@type': type$9156849540313830044$SA Address Unit
+                '@baseType': type$9132362898913168884$Abstract Address Unit
+                place:
+                  name: Street SBX
+                  id: '9157016076413873927'
+                  role: Parent
+                  href: /api/v1/tmf/resourceInventoryManagement/resource/9157016076413873927
+                href: /api/v1/tmf/resourceInventoryManagement/resource/9157016077413873928
+        '400':
+          $ref: '#/components/responses/error_400'
+        '401':
+          $ref: '#/components/responses/error_401'
+        '403':
+          $ref: '#/components/responses/error_403'
+        '429':
+          $ref: '#/components/responses/error_429'
+        '500':
+          $ref: '#/components/responses/error_500'
+        '502':
+          $ref: '#/components/responses/error_502'
+      x-nc-security-policy:
+        name: get.equipment.return.reasons
+  '/api/v1/tmf/resourceInventoryManagement/resource/{resourceId}':
+    get:
+      tags:
+        - Resource Inventory Management API (TMF639)
+      operationId: getResource
+      summary: Get Resource
+      description: |
+        This operation provides searching of a certain object by its identifier. The system returns only parameters that defined in attribute mappings of appropriate object type mapping. If object type mapping does not exist for the searched object the following information is returned:
+          - id
+          - href
+          - baseType
+          - '@type'
+          - '@schemaLocation'
+          - name
+          - description
+          - publicIdentifier
+          - category
+          - lifecycleState
+          - place.id
+          - place.href
+          - place.role
+          - place.name
+          - resourceSpecification
+      parameters:
+        - $ref: '#/components/parameters/x-request-id'
+        - $ref: '#/components/parameters/cookie'
+        - $ref: '#/components/parameters/-fields'
+        - $ref: '#/components/parameters/fields'
+        - name: resourceId
+          in: path
+          required: true
+          description: Name of the Resource
+          schema:
+            type: string
+            format: NCID
+            example: Siemens 9004 A/B PCM Channel Bank
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+              example:
+                description: 'Siemens 9004 A/B PCM Channel Bank, Terminal Equipment Shelf. Supports Sand interconnects eight common equipment units and 48 channel units.'
+                name: Siemens 9004 A/B PCM Channel Bank
+                id: '9145850665913978409'
+                '@schemaLocation': /api/v1/tmf/resourceInventoryManagement/schema/1102673154013366493/type/3073140617013073462
+                resourceSpecification:
+                  name: Siemens 9004 A/B PCM Channel Bank
+                  id: '9145850665913978409'
+                  '@type': type$3073140617013073462$Channel Bank
+                  href: /api/v1/tmf/resourceInventoryManagement/resource/9145850665913978409
+                resourceCharacteristic:
+                  - name: attr$886578$Width(inch)
+                    '@type': Decimal
+                    value: '17.3'
+                  - name: attr$894355$Depth(inch)
+                    '@type': Decimal
+                    value: '14'
+                  - name: attr$878801$Height(inch)
+                    '@type': Decimal
+                    value: '21'
+                  - name: attr$902132$Weight(lbs)
+                    '@type': Decimal
+                    value: '22'
+                  - name: attr$11234567$Manufacturer
+                    '@type': List
+                    value: Siemens
+                  - name: attr$112345679$CatalogNo
+                    '@type': Short Text
+                    value: '91400'
+                '@type': type$3073140617013073462$Channel Bank
+                '@baseType': type$301$Device
+                place:
+                  name: Top
+                  id: '2010452242013476908'
+                  role: Parent
+                  href: /api/v1/tmf/resourceInventoryManagement/resource/2010452242013476908
+                href: /api/v1/tmf/resourceInventoryManagement/resource/9145850665913978409
+        '400':
+          $ref: '#/components/responses/error_400'
+        '401':
+          $ref: '#/components/responses/error_401'
+        '403':
+          $ref: '#/components/responses/error_403'
+        '404':
+          $ref: '#/components/responses/error_404'
+        '429':
+          $ref: '#/components/responses/error_429'
+        '500':
+          $ref: '#/components/responses/error_500'
+        '502':
+          $ref: '#/components/responses/error_502'
+      x-nc-security-policy:
+        name: get.equipment.return.reasons
+    put:
+      tags:
+        - Resource Inventory Management API (TMF639)
+      operationId: updateResource
+      summary: Update Resource (PUT)
+      description: This operation allows full update of a Resource by its identifier. It is possible to update only those attributes for which this is allowed by the system configuration and by Resource Inventory Management API (TMF639) - Data Model. If mandatory parameter of the updated object is defined in attribute mapping but not specified in the PUT request then the system prohibits updating object
+      parameters:
+        - $ref: '#/components/parameters/x-request-id'
+        - $ref: '#/components/parameters/cookie'
+        - $ref: '#/components/parameters/-fields'
+        - $ref: '#/components/parameters/fields'
+        - name: resourceId
+          in: path
+          required: true
+          description: Identifier of Resource object to be updated
+          schema:
+            type: string
+            format: NCID
+            example: '9157016077413873927'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Resource_PatchRequest'
+            example:
+              name: New Name of Address Unit
+              id: '9157016077413873927'
+              lifecycleState: Planned
+              '@schemaLocation': /api/v1/tmf/resourceInventoryManagement/schema/9129538914513885630/type/9156849540313830044
+              '@type': type$9156849540313830044$SA Address Unit
+              '@baseType': type$9132362898913168884$Abstract Address Unit
+              place:
+                name: Street SBX
+                id: '9157016076413873927'
+                role: Parent
+                href: /api/v1/tmf/resourceInventoryManagement/resource/9157016076413873927
+              href: /api/v1/tmf/resourceInventoryManagement/resource/9157016077413873927
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+        '400':
+          $ref: '#/components/responses/error_400'
+        '401':
+          $ref: '#/components/responses/error_401'
+        '403':
+          $ref: '#/components/responses/error_403'
+        '404':
+          $ref: '#/components/responses/error_404'
+        '429':
+          $ref: '#/components/responses/error_429'
+        '500':
+          $ref: '#/components/responses/error_500'
+        '502':
+          $ref: '#/components/responses/error_502'
+      x-nc-security-policy:
+        name: get.equipment.return.reasons
+    delete:
+      tags:
+        - Resource Inventory Management API (TMF639)
+      operationId: deleteResource
+      summary: Delete Resource
+      description: 'This operation allows deleting object by its identifier. During deletion, all child objects are deleted too. If object type mapping for the object type of the deleted object does not exist then the system prohibits deleting this object.'
+      parameters:
+        - $ref: '#/components/parameters/x-request-id'
+        - $ref: '#/components/parameters/cookie'
+        - name: resourceId
+          in: path
+          required: true
+          description: Unique identifier of Resource object to be removed
+          schema:
+            type: string
+            format: NCID
+            example: '9156849540313830044'
+      responses:
+        '204':
+          description: No Content
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/error_400'
+        '401':
+          $ref: '#/components/responses/error_401'
+        '403':
+          $ref: '#/components/responses/error_403'
+        '404':
+          $ref: '#/components/responses/error_404'
+        '429':
+          $ref: '#/components/responses/error_429'
+        '500':
+          $ref: '#/components/responses/error_500'
+        '502':
+          $ref: '#/components/responses/error_502'
+      x-nc-security-policy:
+        name: get.equipment.return.reasons
+    patch:
+      tags:
+        - Resource Inventory Management API (TMF639)
+      operationId: patchResource
+      summary: Update Resource (PATCH)
+      description: |
+        This operation allows partial updating of an object by its identifier. It is possible patch only those attributes for which this is allowed by the system configuration and by Resource Inventory Management API (TMF639) - Data Model.
+
+        **Note**: The PATCH method allows you to initialize the IP address. You can use the following formula to get the IP Address identifier:
+        ```
+        "-1 * range_id * 10000000000000000000000000000000000000000 + ip_address_numeric"
+        ```
+        **Example**:
+          ```
+          PATCH http://10.109.0.24:6800/api/resourceInventoryManagement/resource/-9153599972513396879000000000000183500802
+          {
+              "resourceCharacteristic": [
+                  {
+                      "name": "attr$9020926027013853545$Status",
+                      "value": "Assigned"
+                  }
+              ]
+          }
+          ```
+      parameters:
+        - $ref: '#/components/parameters/x-request-id'
+        - $ref: '#/components/parameters/cookie'
+        - name: resourceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: NCID
+          description: Identifier of Resource object to be updated
+          example: '9157016076413873927'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Resource_PatchRequest'
+            example:
+              '@type': type$9156849540313830044$SA Address Unit
+              name: New Name of Address
+              place:
+                id: '9157016076413873927'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+        '400':
+          $ref: '#/components/responses/error_400'
+        '401':
+          $ref: '#/components/responses/error_401'
+        '403':
+          $ref: '#/components/responses/error_403'
+        '404':
+          $ref: '#/components/responses/error_404'
+        '429':
+          $ref: '#/components/responses/error_429'
+        '500':
+          $ref: '#/components/responses/error_500'
+        '502':
+          $ref: '#/components/responses/error_502'
+      x-nc-security-policy:
+        name: get.equipment.return.reasons
+components:
+  schemas:
+    Place:
+      title: Place
+      required:
+        - id
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of parent object of Resource
+          example: 'Product to Service: Association to Order'
+        id:
+          type: string
+          format: NCID
+          description: Unique identifier of parent object of Resource
+          example: '9122727902013849106'
+        href:
+          type: string
+          description: A reference to parent Resource object
+          example: /api/v1/tmf/resourceInventoryManagement/resource/9122727902013849106
+        role:
+          type: string
+          description: The role of the Place = Parent
+          example: Parent
+      example:
+        name: Customer Building 2
+        id: '9134714207113991804'
+        role: Parent
+        href: /api/v1/tmf/resourceInventoryManagement/resource/9134714207113991804
+    Resource:
+      title: Resource
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description of the Resource
+          example: 'Siemens 9004 A/B PCM Channel Bank, Terminal Equipment Shelf. Supports and interconnects eight common equipment units and 48 channel units'
+        name:
+          type: string
+          description: Name of the Resource
+          example: Siemens 9004 A/B PCM Channel Bank
+        id:
+          type: string
+          format: NCID
+          description: Unique identifier of the Resource
+          example: '9145850665913978409'
+        '@type':
+          type: string
+          description: |
+            Indicates the type of the Resource in following format: "type$" + obj'ect type id + "$" + object type name.To create object from scratch it is necessary to specify object type of created object as @type.
+          example: type$3073140617013073462$Channel Bank
+        '@baseType':
+          type: string
+          description: |
+            Indicates the class of the Resource in following format: "type$" + object class id + "$" + object class name
+          example: type$600$Port
+        category:
+          type: string
+          description: Category of Resource that can be mapped to any parameter of Resource object
+        place:
+          $ref: '#/components/schemas/Place'
+        href:
+          type: string
+          description: A reference to the Resource entity
+          example: /api/v1/tmf/resourceInventoryManagement/resource/6090664139013998456
+        publicIdentifier:
+          type: string
+          description: Identifier of the Resource that can be mapped to any parameter of Resource object
+        lifecycleState:
+          type: string
+          description: State of Resource that can be mapped to any parameter of Resource object.
+          example: Planned
+        resourceSpecification:
+          $ref: '#/components/schemas/ResourceSpecification'
+        resourceCharacteristic:
+          type: array
+          description: List of the Resource Characteristics
+          items:
+            $ref: '#/components/schemas/ResourceCharacteristic'
+        resourceRelationship:
+          type: array
+          description: List of the Resource Relationships
+          items:
+            $ref: '#/components/schemas/ResourceRelationship'
+        '@schemaLocation':
+          type: string
+          description: |
+            Link to the schema describing the REST resource
+          example: /api/v1/tmf/resourceInventoryManagement/schema/1102673154013366493/type/600
+        '':
+          type: string
+      required:
+        - id
+        - '@type'
+        - href
+        - '@schemaLocation'
+    Resource_CreateRequest:
+      title: Resource_CreateRequest
+      required:
+        - lifecycleState
+        - place
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description of the Resource
+          example: 'Siemens 9004 A/B PCM Channel Bank, Terminal Equipment Shelf. Supports and interconnects eight common equipment units and 48 channel units'
+        name:
+          type: string
+          description: Name of the Resource
+          example: Siemens 9004 A/B PCM Channel Bank
+        '@type':
+          type: string
+          description: |
+            Indicates the type of the Resource in following format: "type$" + obj'ect type id + "$" + object type name.To create object from scratch it is necessary to specify object type of created object as @type.
+          example: type$3073140617013073462$Channel Bank
+        category:
+          type: string
+          description: Category of Resource that can be mapped to any parameter of Resource object
+        place:
+          $ref: '#/components/schemas/Place'
+          description: Parent object of Resource
+        publicIdentifier:
+          type: string
+          description: Identifier of the Resource that can be mapped to any parameter of Resource object
+        lifecycleState:
+          type: string
+          description: State of Resource that can be mapped to any parameter of Resource object
+          example: Planned
+        resourceSpecification:
+          $ref: '#/components/schemas/ResourceSpecification'
+          description: Specification of resource into Device Library project or Templates project
+        resourceCharacteristic:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceCharacteristic'
+          description: List of the Resource Characteristics
+        resourceRelationship:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceRelationship'
+          description: List of the Resource Relationships
+    Resource_PatchRequest:
+      title: Resource_PatchRequest
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description of the Resource
+          example: 'Siemens 9004 A/B PCM Channel Bank, Terminal Equipment Shelf. Supports and interconnects eight common equipment units and 48 channel units'
+        name:
+          type: string
+          description: Name of the Resource
+          example: Siemens 9004 A/B PCM Channel Bank
+        category:
+          type: string
+          description: Category of Resource that can be mapped to any parameter of Resource object
+        place:
+          $ref: '#/components/schemas/Place'
+          description: Parent object of Resource
+        publicIdentifier:
+          type: string
+          description: Identifier of the Resource that can be mapped to any parameter of Resource object
+        lifecycleState:
+          type: string
+          description: State of Resource that can be mapped to any parameter of Resource object
+          example: Planned
+        resourceCharacteristic:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceCharacteristic'
+          description: List of the Resource Characteristics
+        resourceRelationship:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceRelationship'
+          description: List of the Resource Relationships
+    ResourceCharacteristic:
+      title: ResourceCharacteristic
+      required:
+        - name
+        - value
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the Resource Characteristic
+          example: attr$13$Interface
+        '@type':
+          type: string
+          description: |
+            Type of characteristic. Possible values for single characteristics are:
+              - Text;
+              - Integer;
+              - Decimal;
+              - List;
+              - Date;
+              - Masked Text. 
+                For multiple characteristics used value 'List<type_name>' where type name one of the possible values.
+          example: Text
+        value:
+          type: string
+          description: Value of the Resource Characteristic
+          example: Video Interface
+      example:
+        name: attr$13$Interface
+        '@type': List
+        value: Video Interface
+    ResourceRef:
+      title: ResourceRef
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          type: string
+          format: NCID
+          description: Unique identifier of the Resource which associated with resource by Resource Relationship
+          example: '1329837928648621046'
+        href:
+          type: string
+          description: A reference to the Resource which associated with resource by Resource Relationship
+          example: /api/v1/tmf/resourceInventoryManagement/resource/6090664139013998456
+    ResourceRelationship:
+      title: ResourceRelationship
+      required:
+        - type
+        - resourceRef
+      type: object
+      properties:
+        type:
+          type: string
+          description: Unique identifier of the Resource Relationship
+          example: attr$457955$Connectivity
+        resourceRef:
+          $ref: '#/components/schemas/ResourceRef'
+          description: Resource which associated with resource by Resource Relationship
+    ResourceSpecification:
+      title: ResourceSpecification
+      required:
+        - id
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the Resource Specification
+          example: On Delete SFP form N1EFF8 SQL Rule
+        id:
+          type: string
+          format: NCID
+          description: Unique identifier of specification of resource into Device Library project or Templates project
+          example: '9139067953013711680'
+        '@type':
+          type: string
+          description: Indicates the type of the specification of resource
+          example: type$9138827313813775966$Port-Connector SQL Rule
+        href:
+          type: string
+          description: A reference to the Resource Specification
+          example: /api/v1/tmf/resourceInventoryManagement/resource/9139067953013711680
+      example:
+        name: On Delete SFP form N1EFF8 SQL Rule
+        id: '9139067953013711680'
+        '@type': type$9138827313813775966$Port-Connector SQL Rule
+        href: /api/v1/tmf/resourceInventoryManagement/resource/9139067953013711680
+    ErrorResponse:
+      title: ErrorResponse
+      type: object
+      properties:
+        errors:
+          type: array
+          description: JSON array with TBAPI error details.
+          items:
+            type: object
+            required:
+              - status
+              - code
+              - reason
+            properties:
+              status:
+                type: string
+                description: HTML (System) error code. Codes described in the tables below. Mandatory field.
+              code:
+                type: string
+                description: TBAPI error code which is described in later table. Mandatory field.
+              sourceErrCode:
+                type: string
+                description: Source system Error Code. Optional field.
+              reason:
+                type: string
+                description: 'Human readable description of error, corresponds to code. Mandatory field.'
+              message:
+                type: string
+                description: Source System error message. Optional.
+              source:
+                type: object
+                required:
+                  - pointer
+                  - parameter
+                description: Details of error source.
+                properties:
+                  pointer:
+                    type: string
+                    description: An optional attribute that contains stacktrace or similar technical information.Is used mostly for testing and troubleshooting purposes. 'debugDetail' is presented in the error response only when logging.dev.mode=true.
+                  parameter:
+                    type: string
+                    description: Error parameter in the request.
+              debugDetail:
+                type: string
+                description: |-
+                  An optional attribute that contains stack trace or similar technical information. 
+                  Is used mostly for testing and troubleshooting purposes. 'debugDetail' is presented in the error response only when logging.dev.mode=true.
+              extra:
+                type: object
+                required:
+                  - referenceError
+                description: |-
+                  Object containing reference to error description. The extra field should be configured by project customization.
+                  Only referenceError field is included by default, all other should be customized separately.
+                properties:
+                  referenceError:
+                    type: string
+                    description: 'Reference to error description. For example, link to the BASS.'
+    FilteringParameters:
+      title: FilteringParameters
+      description: |
+        Type used for 'filtering' query parameters. It is a Map, where key is String (query parameter name) and value is either String or array of String (query parameter value: single or multiple).
+      type: object
+      additionalProperties:
+        oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+  parameters:
+    filtering_for_resource:
+      name: filtering
+      in: query
+      description: |
+        The following attributes are available for filtering:
+        | Name                    | Options | required @type| Description | 
+        |------                   |---------|---------------|-------------|
+        | @type                   | eq      | N/A           | Indicates the type of the Resource|
+        | name                    | eq,like | Optional      | Name of the Resource|
+        | description             | eq,like | Optional      | Description of the Resource|
+        | publicIdentifier        | eq,like | Mandatory     | Identifier of the Resource that can be mapped to any parameter of Resource object|
+        | category                | eq      | Mandatory     | Category of Resource that can be mapped to any parameter of Resource object|
+        | lifecycleState          | eq      | Mandatory     | State of Resource that can be mapped to any parameter of Resource object|
+        | place.id                | eq      | Optional      | Unique identifier of parent object of Resource (only immediate children would be returned)|
+        | place.id.ancestor       | eq      | Optional      | Unique identifier of parent object of Resource (children of any level would be returned)|
+        | %JSON Name%             | eq      | Mandatory     | Attribute Characteristic Mapping (resourceCharacteristic.name=resourceCharacteristic.value)|
+        | %JSON Type Name%        | eq      | Mandatory     | Attribute Relationship Mapping (resourceRelationship.type = resourceRelationship.resourceRef.id)|
+
+        There is an ability to specify wildcards via .like. In search criteria, it is defined as Attribute.like=value. Two types of wildcards are available:
+          - asterisk symbol (“*”) to represent any number of characters;
+          - question symbol (“?”) to represent a single character.
+
+        **Note**: The column "required @type" shows if an additional parameter @type to be defined in Path. If @type is mandatory and absent in PATH the filter woun't work.
+
+        **Note**: If @type is specifyed in path the system will return resourceCharacteristic, lifecycleState, category, publicIdentifier. Otherwise if @type isn't specifyed the resourceCharacteristic will be absent. 
+
+        **Note**: Characters in the URL should be decoded.
+        ``` 
+        Example: Phone numbers has format (+X) XXXXXXXX. The Character "+" should be converted to %2B. 
+        (+7) = (%2B7) and URL should be /api/v1/tmf/resourceInventoryManagement/resource?name=(%2B7) 83 1009 0000.
+        ```
+      required: false
+      schema:
+        $ref: '#/components/schemas/FilteringParameters'
+      style: form
+      explode: true
+      example: |
+        "@type=type$3073140617013073462$Channel Bank",
+        "name=Siemens 9004 A/B PCM Channel Bank",
+        "name.like=Siemens 9004*",
+        "description=Terminal Equipment Shelf",
+        "description.like=Terminal*",
+        "publicIdentifier=Siemens 9004&@type=type$3073140617013073462$Channel Bank",
+        "publicIdentifier.like=Siemens 9004*&@type=type$3073140617013073462$Channel Bank",
+        "category=Terminal Equipment Shelf&@type=type$3073140617013073462$Channel Bank",
+        "lifecycleState=Planned&@type=type$3073140617013073462$Channel Bank",
+        "place.id=9122727902013849106",
+        "place.id.ancestor=9122727902013849106",
+        "resource?attr$15100$PhoneNumber.like=78310090002&@type=type$9123981749413901502$Phone Number",
+        "attr$3091842003013833782$NetworkElement=9164857223713302553&@type=type$301$Device"
+    range:
+      name: Range
+      in: header
+      description: Requested specific range of the elements for pagination
+      schema:
+        type: string
+      example: 1-10
+    x-request-id:
+      in: header
+      name: X-Request-ID
+      description: Request identifier to be transferred in HTTP header for any TBAPI operations
+      schema:
+        type: string
+        format: uuid
+      required: false
+    cookie:
+      name: Cookie
+      in: header
+      description: |
+        There are following cookies used in TBAPI:       
+        | Name                  | Description | 
+        |------                 |-------------|
+        | STICKY-SESSION-ID-v#  | Session identifier used for balancing in cloud public gateway. TBAPI automatically creates a new sticky session if it was not sent. For correct balancing sticky session has to be saved between requests in ideal e2e scenario. # is a digit depending on TBAPI deployed version. |
+        | JSESSIONID            | TBAPI Session identifier. TBAPI automatically creates a new session on the first request from API client. Session identifier is returned with response cookies. Client application must provide that session identifier with the same 'JSESSIONID' cookie for all requests associated with the customer session. |
+      required: false
+      schema:
+        type: string
+      example: JSESSIONID=0USvnGX2iqADIHL72DmKOdzvmy_Ox4xI1q8JYfQq;STICKY-SESSION-ID-v1=3e3299cf6aaacdfe
+    '-fields':
+      name: '-fields'
+      in: query
+      description: |
+        Comma separated list of attributes to be excluded from the response resource representation. 
+        Acceptable values are request specific and are determined by the response format. 
+        By default, full verbosity is assumed. Non-existent attributes are ignored.
+
+        It's mutually exclusive with 'fields' and using both in a request will result in a 400 response code.
+      schema:
+        type: string
+      example: 'markets, customerCategories, distributionChannels'
+    fields:
+      name: fields
+      in: query
+      description: |
+        Comma separated list of attributes to be included in the response resource representation. 
+        Acceptable values are request specific and are determined by the response format. 
+        By default, full verbosity is assumed. If this parameter is specified, only the requested attributes are included in the response along with the mandatory ID. Non-existent attributes are ignored. 
+
+        It's mutually exclusive with '-fields' and using both in a request will result in a 400 response code.
+      schema:
+        type: string
+      example: product.name
+  securitySchemes:
+    openId:
+      type: openIdConnect
+      description: Use OpenId to authorize requests.
+      openIdConnectUrl: 'https://example.com/.well-known/openid-configuration'
+  headers:
+    content-range:
+      description: 'In case of paginated response from TBAPI, range of response content is populated with "Content-Range" HTTP header. The response header is used for collection requests. Is implemented for using range requests. The header describes what range of the selected representation is enclosed, and a payload consisting of the range. Worth noting is the difference between item indexing - RFC 7233 implies 0-based indexing for byte ranges, while the TMForum guidelines specify 1-based indexing for itemized collections. This specification uses 1-based indexes.'
+      schema:
+        type: string
+      example: 1-10/440
+  examples:
+    error_400:
+      summary: Bad Request
+      value:
+        errors:
+          - status: '400'
+            code: TBAPI-3000
+            reason: 'Request data consistency error: 400 Bad Request'
+            debugDetail: "com.netcracker.tbapi.common.exceptions.api.impl.BadRequestException: 400 Bad Request...run(ThreadPoolExecutor.java:624)\n\tat java.lang.Thread.run(Thread.java:748)\n"
+            extra:
+              referenceError: 'https://bass.netcracker.com/display/GSS/TBAPI-3000'
+    error_401:
+      summary: Unauthorized
+      value:
+        errors:
+          - status: '401'
+            code: TBAPI-0001
+            reason: 'Unexpected business error: 401 : [HTTP Status 401 : Bad credentials] debugDetail: ''com.netcracker.tbapi.common.exceptions.api.impl.InternalServerErrorException:org.springframework.web.client.HttpClientErrorException$Unauthorized: 401 : [HTTP Status 401 : Bad credentials'''
+            extra:
+              referenceError: 'https://bass.netcracker.comTBAPI-0001'
+    error_403:
+      summary: Forbidden
+      value:
+        errors:
+          - status: '403'
+            code: TBAPI-0101
+            reason: 'Permission error: Forbidden. Access denied'
+            debugDetail: 'com.netcracker.tbapi.common.exceptions.api.impl.ForbiddenException: com.netcracker.tbapi.security.ForbiddenException: Permission error: Forbidden.Access denied'
+            extra:
+              referenceError: 'https://bass.netcracker.comTBAPI-0101'
+    error_500:
+      summary: Internal Server Error
+      value:
+        errors:
+          - status: '500'
+            code: TBAPI-0001
+            reason: 'Unexpected business error: Error invoking method ''owns'' in ''class com.sun.proxy.$Proxy382'''
+            debugDetail: 'com.netcracker.tbapi.common.exceptions.api.impl.InternalServerErrorException...javax.el.ELException: ... 110 more'
+            extra:
+              referenceError: 'https://bass.netcracker.comTBAPI-0001'
+    error_502:
+      summary: Bad Gateway
+      value:
+        errors:
+          - status: '502'
+            code: TBAPI-0001
+            reason: Unexpected business error
+            debugDetail: "com.netcracker.tbapi.common.exceptions.api.impl.BadGatewayException: Unexpected business error\tat...(Thread.java:748)"
+            extra:
+              referenceError: 'https://bass.netcracker.comTBAPI-0001'
+    error_429:
+      summary: Too Many Requests
+      value:
+        errors:
+          - status: '429'
+            code: TBAPI.GN-1643
+            reason: TBAPI is unable to process current amount of requests
+            message: Number of allowed requests has been exceeded for this API. Please try again soon
+            debugDetail: "com.netcracker.tbapi.common.exceptions.api.impl.UnprocessableEntityException: Number of allowed requests has been exceeded for this API. Please try again soon \n\tat ... Thread.run(Thread.java:748)\n"
+            extra:
+              referenceError: 'https://bass.netcracker.com'
+    error_404:
+      summary: Not Found
+      value:
+        errors:
+          - status: '404'
+            code: TBAPI-3000
+            reason: 'Request data consistency error: Object with id: 74 is not found.'
+            debugDetail: 'com.netcracker.tbapi.common.exceptions.api.impl.NotFoundException: Object with id: 74 is not found.'
+            extra:
+              referenceError: 'https://bass.netcracker.comTBAPI-3000'
+  responses:
+    error_400:
+      description: |-
+        The server cannot or will not process the request due to an
+        apparent client error (e.g., malformed request syntax, size too large,
+        invalid request message framing, or deceptive request routing)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            error_400:
+              $ref: '#/components/examples/error_400'
+    error_401:
+      description: |-
+        Authentication is required and has failed or has not yet been
+        provided. The response must include a WWW-Authenticate header field containing
+        a challenge applicable to the requested resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            error_401:
+              $ref: '#/components/examples/error_401'
+    error_403:
+      description: 'The request contained valid data and was understood by the server, but the server is refusing action'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            error_401:
+              $ref: '#/components/examples/error_403'
+    error_500:
+      description: 'A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            error_500:
+              $ref: '#/components/examples/error_500'
+    error_502:
+      description: The server was acting as a gateway or proxy and received an invalid response from the upstream server.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            error_502:
+              $ref: '#/components/examples/error_502'
+    error_429:
+      description: Response status code indicates that indicates the client has sent too many requests in a given amount of time.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            error_429:
+              $ref: '#/components/examples/error_429'
+    error_404:
+      description: The requested resource could not be found but may be available in the future. Subsequent requests by the client are permissible
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            error_404:
+              $ref: '#/components/examples/error_404'
+security:
+  - openId: []
