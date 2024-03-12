@@ -56,23 +56,14 @@ paths:
               - question symbol (“?”) to represent a single character.
           required: false
           schema:
-            $ref: "#/components/schemas/FilteringParameters"
-          style: form
-          explode: true
-          example:
-            id: "9145850665913978409"
-            "@baseType": type$600$Port
-            "@type": type$3073140617013073462$Channel Bank
-            name: Siemens 9004 A/B PCM Channel Bank
-            name.like: Siemens 9004*
-            description: Terminal Equipment Shelf. Supports and interconnects eight common equipment
-            description.like: Terminal*
-            publicIdentifier: Siemens 9004
-            publicIdentifier.like: Siemens 9004*
-            category: Terminal Equipment Shelf
-            lifecycleState: Planned
-            place.id: "9122727902013849106"
-            place.id.ancestor: "9122727902013849106"
+            oneOf:
+             - $ref: "#/components/schemas/FilteringParameters"
+             - type: string
+               description: xxx
+               enum:
+                 - a
+                 - b
+                 - c 
       responses:
         "200":
           description: OK
@@ -82,22 +73,14 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Resource"
-              example:
-                - name: "42"
-                  id: "9157016077413873927"
-                  "@schemaLocation": /api/v1/tmf/resourceInventoryManagement/schema/9129538914513885630/type/9156849540313830044
-                  "@type": type$9156849540313830044$SA Address Unit
-                  version: "4"
-                  "@baseType": type$9132362898913168884$Abstract Address Unit
-                  place:
-                    name: Street SBX
-                    id: "9157016076413873927"
-                    role: Parent
-                    href: /api/v1/tmf/resourceInventoryManagement/resource/9157016076413873927
-                  href: /api/v1/tmf/resourceInventoryManagement/resource/9157016077413873927
+                oneOf:
+                  - $ref: "#/components/schemas/Resource"
+                  - type: string
+                    description: ccc
+                    enum:
+                      - a
+                      - b
+                  - type: number
         "400":
           $ref: "#/components/responses/error_400"
         "401":
